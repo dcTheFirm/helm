@@ -11,7 +11,8 @@ on:
     branches:
       - develop
       - feature/jenkins
-  worfklow_dispatch:
+      
+  workflow_dispatch:
 
 permissions:
   contents: read
