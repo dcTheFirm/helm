@@ -1,0 +1,36 @@
+
+name: Deploy NGINX with Helm
+
+on:
+  push:
+    branches:
+      - main
+    paths:
+      - "charts/nginx-demo/**"
+      - ".github/workflows/deploy.yaml"
+  workflow_dispatch:
+
+jobs:
+  deploy:
+    runs-on: self-hosted
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Check Helm chart
+        run: helm lint ./charts/nginx-demo
+
+      - name: Check Kubernetes cluster
+        run: kubectl --context kind-app get nodes
+
+      - name: Deploy using Helm
+        run: |
+          helm upgrade --install nginx-demo ./charts/nginx-demo \
+            --kube-context kind-app \
+            --namespace helm-demo \
+            --create-namespace \
+            --wait
+
+      - name: Verify deployment
+        run: kubectl --context kind-app get pods -n helm-demo
